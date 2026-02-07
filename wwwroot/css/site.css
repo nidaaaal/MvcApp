@@ -1,0 +1,137 @@
+body {
+    font-family: Arial;
+    background-color: #f4f6f9;
+}
+
+.container {
+    width: 445px;
+    margin: 80px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.containerup {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    margin: 80px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+}
+
+.btn {
+    text-decoration: none;
+    background: #00005B;
+    cursor: pointer;
+    line-height: 36px;
+    padding: 0 20px;
+    text-align: center;
+    color: white;
+    width: max-content;
+    height: 36px;
+    border: solid 1px black;
+    border-radius: 4px;
+}
+
+    .btn:hover {
+        background-color: #005ea6;
+    }
+
+.logo {
+    height: 50px;
+}
+
+.error {
+    display: block;
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.bgimg {
+    height: 300px;
+}
+
+.cn {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-bottom: 2px solid black;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-left: 50px;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.line {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+select {
+    border-radius: 10px;
+}
+
+.upleft {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+    border-right: dashed 2px #BDB791;
+}
+
+
+.btn1 {
+    background: #55A65D;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+    color: white;
+    height: 36px;
+    border: solid 1px blue;
+    border-radius: 7px;
+}
+
+    .btn1:hover {
+        background-color: #19381C;
+    }
+
+.upform {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.hide {
+    text-align: center;
+    color: #CFBA34;
+}
