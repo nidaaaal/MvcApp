@@ -1,4 +1,5 @@
 ﻿using MvcApp.Helper;
+using MvcApp.Helper.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace MvcApp.Models.ViewModels

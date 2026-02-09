@@ -1,127 +1,138 @@
 ﻿@model MvcApp.Models.ViewModels.RegisterViewModel;
 
 <nav class="cn">
-    <a href="Dashboard.aspx">  <img src="../Content/images/booking logo.png" class="logo" /> </a>
-    <a href="Login.aspx" class="btn">Login</a>
-    <a href="Register.aspx" class="btn">Register</a>
+    <a href="index.html">  <img src="~/images/logo.png" class="logo" /> </a>
+    <a asp-controller="Account" asp-action="Login" class="btn">Login</a>
+    <a asp-controller="Account" asp-action="Register" class="btn">Register</a>
+
 </nav>
 
-<div class="card">
+<div class="container">
    <form asp-action="Register" method="post">
 
-       <h1 class="title">Registration</h1>
+    <h1 class="title">Registration</h1>
 
     <div class="form-group">
        <label asp-for="UserName"></label>
-       <input asp-for="UserName" type="text" />
-       <span asp-validation-for="UserName" class="error"></span>
+       <input asp-for="UserName" type="text" class="form-control"/>
+       <span asp-validation-for="UserName" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Password"></label>
-        <input asp-for="Password" />
-        <span asp-validation-for="Password"></span>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" />
-        <span asp-validation-for="ConfirmPassword"></span>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="error small"></span>
     </div>
 
         <h3 class="title">Personal Information</h3>
 
     <div class="form-group">
         <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" />
-        <span asp-validation-for="FirstName"></span>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="LastName"></label>
-        <input asp-for="LastName" />
-        <span asp-validation-for="LastName"></span>
+        <input asp-for="LastName" class="form-control"/>
+        <span asp-validation-for="LastName" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="DisplayName"></label>
-        <input asp-for="DisplayName" />
-        <span asp-validation-for="DisplayName"></span>
+        <input asp-for="DisplayName" class="form-control"/>
+        <span asp-validation-for="DisplayName" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label>Date Of Birth</label>
         <div class="line">
-        <select asp-for="Day" id="ddlDay"></select>
-        <select asp-for="Month" id="ddlMonth"></select>
-        <select asp-for="Year" id="ddlYear"></select>
+        <select asp-for="Day" id="ddlDay" class="form-control"></select>
+        <select asp-for="Month" id="ddlMonth" class="form-control"></select>
+        <select asp-for="Year" id="ddlYear" class="form-control"></select>
         </div>
-        <span asp-validation-for="Year"></span>
+        <span asp-validation-for="Year" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Age"></label>
-        <input asp-for="Age" id="txtAge" class="form-group" readonly/>
+        <input asp-for="Age" id="txtAge" class="form-control" readonly />
+        <span id="ageError" class="error small"></span>
+        <span id="dobError" class="error small"></span>
+
     </div>
 
     <div class="form-group">
         <label >Gender</label><br/>
         <label>
-            <input type="radio" asp-for="Gender" value="1" /> Male
+            <input type="radio" asp-for="Gender" value="1"/> Male
         </label>
         <label class="ms-3">
             <input type="radio" asp-for="Gender"  value="0" /> Female
         </label>
-            <span asp-validation-for="Gender"></span>
+            <span asp-validation-for="Gender" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Address"></label>
-        <input asp-for="Address" />
-        <span asp-validation-for="Address"></span>
+        <input asp-for="Address" class="form-control"/>
+        <span asp-validation-for="Address" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label>State</label>
-        <select asp-for="State" id="ddlState">
+        <select asp-for="State" id="ddlState" class="form-control">
             <option value="">-- select state --</option>
-            <option value="kerala">text</option>
-            <option value="value">text</option>
-            <option value="value">text</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Tamilnadu">Tamilnadu</option>
+            <option value="Karnataka">Karnataka</option>
         </select>
-        <span asp-validation-for="State"></span>
+        <span asp-validation-for="State" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label>City</label>
-        <select asp-for="City" id="ddlCity">
+        <select asp-for="City" id="ddlCity" class="form-control">
             <option value="">-- select state first --</option>
         </select>
-        <span asp-validation-for="City"></span>
+        <span asp-validation-for="City" class="error small"></span>
     </div>
 
     <div class="form-group">
          <label asp-for="ZipCode"></label>
-         <input asp-for="ZipCode" />
-         <span asp-validation-for="ZipCode"></span>
+         <input asp-for="ZipCode" class="form-control"/>
+         <span asp-validation-for="ZipCode" class="error small"></span>
     </div>
 
     <div class="form-group">
          <label asp-for="Phone"></label>
-         <input asp-for="Phone" />
-         <span asp-validation-for="Phone"></span>
+         <input asp-for="Phone" class="form-control"/>
+         <span asp-validation-for="Phone" class="error small"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Mobile"></label>
-        <input asp-for="Mobile" />
-        <span asp-validation-for="Mobile"></span>
+        <input asp-for="Mobile" class="form-control"/>
+        <span asp-validation-for="Mobile" class="error small"></span>
     </div>
 
     <br />
-
+    
+    <div class="line">
     <button type="reset" class="btn btn-secondary">Cancel</button>
     <button type="submit" class="btn btn-secondary">Register</button>
+    </div>
 
    </form>
 </div>
+
+    @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js//register.js"></script>
+    };

@@ -98,7 +98,7 @@ namespace MvcApp.Repository
         {
             await using var conn = GetConnection();
 
-            string sql = "SELECT * FROM app.users WHERE id = @id;";
+            string sql = "SELECT * FROM app.users WHERE user_id = @id;";
 
             using (SqlCommand cmd = new SqlCommand(sql, conn))
             {

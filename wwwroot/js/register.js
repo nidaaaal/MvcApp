@@ -10,18 +10,75 @@
     for (let i = currentYear; i >= 1900; i--)
         $('#ddlYear').append(`<option value="${i}">${i}</option>`);
 
-    $('#ddlDay, #ddlMonth, #ddlYear').change(function () {
-        const d = $('#ddlDay').val();
-        const m = $('#ddlMonth').val();
-        const y = $('#ddlYear').val();
+    const MIN_AGE = 13;
 
-        if (d && m && y) {
-            const dob = new Date(y, m - 1, d);
-            const diff = Date.now() - dob.getTime();
-            const age = new Date(diff).getUTCFullYear() - 1970;
-            $('#txtAge').val(age);
+    function isLeapYear(year) {
+        return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+
+    function isValidDate(day, month, year) {
+        if (!day || !month || !year) return false;
+
+        const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        return day >= 1 &&
+            month >= 1 &&
+            month <= 12 &&
+            year >= 1900 &&
+            day <= daysInMonth[month - 1];
+    }
+
+    function calculateAge(day, month, year) {
+        const today = new Date();
+        let age = today.getFullYear() - year;
+
+        const hasHadBirthdayThisYear =
+            today.getMonth() + 1 > month ||
+            (today.getMonth() + 1 === month && today.getDate() >= day);
+
+        if (!hasHadBirthdayThisYear) age--;
+
+        return age;
+    }
+
+
+
+
+    $('#ddlDay, #ddlMonth, #ddlYear').on('change', function () {
+
+        const day = parseInt($('#ddlDay').val(), 10);
+        const month = parseInt($('#ddlMonth').val(), 10);
+        const year = parseInt($('#ddlYear').val(), 10);
+
+        $('#txtAge').val('');
+        $('#dobError').text('');
+        $('#ageError').text('');
+
+        if (!isValidDate(day, month, year)) {
+            $('#dobError').text('Please select a valid date');
+            return;
         }
+
+        const dob = new Date(year, month - 1, day);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (dob > today) {
+            $('#dobError').text('Date of birth cannot be in the future');
+            return;
+        }
+
+        const age = calculateAge(day, month, year);
+
+        if (age < MIN_AGE) {
+            $('#ageError').text('You must be at least 13 years old');
+            return;
+        }
+
+
+        $('#txtAge').val(age);
     });
+
 
     $('#ddlState').change(function () {
         const state = $(this).val();

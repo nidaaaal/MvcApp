@@ -1,4 +1,6 @@
 ﻿using MvcApp.Helper;
+using MvcApp.Helper.AttributeValidation;
+using MvcApp.Helper.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace MvcApp.Models.ViewModels
@@ -7,9 +9,13 @@ namespace MvcApp.Models.ViewModels
     {
             [Required]
             [MaxLength(255)]
+            [RegularExpression(@"(^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$)|(^\d{10}$)",
+            ErrorMessage = "Enter a valid email or 10-digit phone number")]
             public string UserName { get; set; } = null!;
 
             [Required]
+            [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$",
+            ErrorMessage = "Password must contain uppercase, lowercase, number and special character")]
             public string Password { get; set; } = null!;
 
             [Required]
@@ -40,7 +46,7 @@ namespace MvcApp.Models.ViewModels
             public int Age { get; set; }
 
             [Required]
-            public bool Gender { get; set; }
+            public int Gender { get; set; }
 
             [Required, MinLength(10), MaxLength(255)]
             public string Address { get; set; } = null!;
@@ -52,13 +58,14 @@ namespace MvcApp.Models.ViewModels
             public string? State { get; set; } = null;
 
             [Required]
-            [Range(100000,999999)]
-            public int ZipCode { get; set; }
+            [RegularExpression(@"^\d{6}$", ErrorMessage = "Enter a valid 6-digit ZIP code")]
+            public string ZipCode { get; set; } = null!;
 
-            [Required, StringLength(10, MinimumLength = 10)]
+            [Required]
+            [RegularExpression(@"^\d{10}$", ErrorMessage = "Enter a valid 10-digit phone number")]
             public string Phone { get; set; }= null!;
 
-            [ StringLength(10, MinimumLength = 10)]
+            [RegularExpression(@"^\d{10}$", ErrorMessage = "Enter a valid 10-digit phone number")]
             public string? Mobile { get; set; } = null;
     }
 }

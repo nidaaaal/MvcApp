@@ -22,12 +22,12 @@ namespace MvcApp.Services
             var validateUsername = InputIdentifier.Identify(dto.UserName);
 
             if (validateUsername == InputIdentifier.InputType.Invalid)
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Invalid Email or Phone Number format" };
+                return new AccountResult { IsSuccess = false,  ErrorMessage = "Invalid Email or Phone Number format" };
 
             var passwordCheck = PasswordValidator.Validate(dto.Password);
 
             if (!passwordCheck.IsValid)
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = passwordCheck.ErrorMessage };
+                return new AccountResult { IsSuccess = false,  ErrorMessage = passwordCheck.ErrorMessage };
 
 
 
@@ -44,9 +44,10 @@ namespace MvcApp.Services
             {
                 age--;
             }
-            if(age != dto.Age)
+
+            if(age <13)
             {
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Age Missmatched with Year !" };
+                return new AccountResult { IsSuccess = false, ErrorMessage = "Underage!" };
 
             }
 
@@ -56,22 +57,22 @@ namespace MvcApp.Services
 
                 if (result == -1)
                 {
-                    return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Username already exists with the username" };
+                    return new AccountResult { IsSuccess = false, ErrorMessage = "Username already exists with the username" };
 
                 }
                 if (result == 1)
                 {
-                    return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "User registered successfully" };
+                    return new AccountResult { IsSuccess = true };
                 }
                 else
                 {
-                    return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Registered Failed" };
+                    return new AccountResult { IsSuccess = false, ErrorMessage = "Registered Failed" };
 
                 }
             }
             catch (Exception ex)
             {
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = ex.Message };
+                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
 
             }
         }
@@ -82,18 +83,18 @@ namespace MvcApp.Services
             {
                 var result = await _userRepository.GetUserByUsername(username);
 
-                if (result == null) return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "No User Found on the corresponding username" };
+                if (result == null) return new AccountResult { IsSuccess = false, ErrorMessage = "No User Found on the corresponding username" };
 
-                if (!BCrypt.Net.BCrypt.Verify(password, result.HashedPassword)) return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Invalid Credentials!" };
+                if (!BCrypt.Net.BCrypt.Verify(password, result.HashedPassword)) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Credentials!" };
 
 
                 await _userRepository.SaveLogin(result.Id);
 
-                return new AccountResult { IsSuccess = false, UserId = result.Id, ErrorMessage = "Login successfully" };
+                return new AccountResult { IsSuccess = true };
             }
             catch(Exception ex)
             {
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = ex.Message };
+                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
 
             }
         }
@@ -120,18 +121,18 @@ namespace MvcApp.Services
 
                 if (result.ResultCode == 1)
                 {
-                    return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "Profile Updated Sucessfully" };
+                    return new AccountResult { IsSuccess = false, ErrorMessage = "Profile Updated Sucessfully" };
                 }
                 if (result.ResultCode == -1)
                 {
-                    return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "User Not Found" };
+                    return new AccountResult { IsSuccess = false, ErrorMessage = "User Not Found" };
                 }
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = "unhandled exception" };
+                return new AccountResult { IsSuccess = false, ErrorMessage = "unhandled exception" };
 
             }
             catch (Exception ex)
             {
-                return new AccountResult { IsSuccess = false, UserId = null, ErrorMessage = ex.Message };
+                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
 
             }
 

@@ -10,6 +10,29 @@
 </head>
 <body>
     <div>
+        @if (TempData["SuccessMessage"] != null || !ViewData.ModelState.IsValid)
+        {
+            <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055">
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @Html.ValidationSummary(false)
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+            </div>
+        }
+
         <main role="main">
             @RenderBody()
         </main>

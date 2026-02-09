@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MvcApp.Helper
+namespace MvcApp.Helper.Validation
 {
 
     public class DateOfBirthAttribute : ValidationAttribute
