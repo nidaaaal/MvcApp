@@ -1,13 +1,16 @@
-﻿@model MvcApp.Models.ViewModels.RegisterViewModel;
+﻿@model RegisterViewModel;
+
+@{
+    ViewData["Title"] = "Register";
+}
 
 <nav class="cn">
-    <a href="index.html">  <img src="~/images/logo.png" class="logo" /> </a>
+    <a asp-controller="Home" asp-action="Index"><img src="~/images/logo.png" class="logo" /> </a>
     <a asp-controller="Account" asp-action="Login" class="btn">Login</a>
     <a asp-controller="Account" asp-action="Register" class="btn">Register</a>
-
 </nav>
 
-<div class="container">
+<div class="containerform">
    <form asp-action="Register" method="post">
 
     <h1 class="title">Registration</h1>

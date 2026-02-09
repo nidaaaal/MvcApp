@@ -3,8 +3,8 @@ body {
     background-color: #f4f6f9;
 }
 
-.container {
-    width: 445px;
+.containerform {
+    width: max-content;
     margin: 80px auto;
     padding: 20px;
     background: white;
