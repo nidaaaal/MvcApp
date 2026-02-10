@@ -12,6 +12,7 @@ namespace MvcApp.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+
         public UserService(IUserRepository userRepository) 
         { 
             _userRepository = userRepository;
@@ -90,7 +91,7 @@ namespace MvcApp.Services
 
                 await _userRepository.SaveLogin(result.Id);
 
-                return new AccountResult { IsSuccess = true };
+                return new AccountResult { IsSuccess = true ,UserId = result.Id };
             }
             catch(Exception ex)
             {
@@ -98,10 +99,30 @@ namespace MvcApp.Services
 
             }
         }
-        public async Task<Users?> GetUserProfile(int id)
+        public async Task<UserProfileViewModel?> GetUserProfile(int id)
         {
+
                 var result = await _userRepository.GetUserProfile(id);
-                return result == null ? null : result;
+
+                if( result == null) return  null ;
+
+            return new UserProfileViewModel
+            {
+                FirstName = result.FirstName,
+                LastName = result.LastName,
+                DisplayName = result.DisplayName ?? "",
+                DateOfBirth = result.DateOfBirth.ToString("dd/MM/yyyy"),
+                Age = result.Age,
+                Gender = result.Gender ? "Male" : "Female",
+                Address = result.Address ?? "",
+                City = result.City ?? "",
+                State = result.State ?? "",
+                ZipCode = result.ZipCode,
+                Phone = result.Phone,
+                Mobile = result.Mobile ?? "",
+                IsEditing = false
+                
+            };
             
         }
 

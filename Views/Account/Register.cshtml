@@ -61,14 +61,14 @@
         <select asp-for="Year" id="ddlYear" class="form-control"></select>
         </div>
         <span asp-validation-for="Year" class="error small"></span>
+        <span id="dobError" class="error small"></span>
+
     </div>
 
     <div class="form-group">
         <label asp-for="Age"></label>
         <input asp-for="Age" id="txtAge" class="form-control" readonly />
         <span id="ageError" class="error small"></span>
-        <span id="dobError" class="error small"></span>
-
     </div>
 
     <div class="form-group">
@@ -128,8 +128,8 @@
     <br />
     
     <div class="line">
-    <button type="reset" class="btn btn-secondary">Cancel</button>
-    <button type="submit" class="btn btn-secondary">Register</button>
+    <button type="reset" class="btn">Cancel</button>
+    <button type="submit" class="btn">Register</button>
     </div>
 
    </form>
@@ -137,5 +137,5 @@
 
     @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js//register.js"></script>
+    <script src="~/js/register.js"></script>
     };

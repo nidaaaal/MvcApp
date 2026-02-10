@@ -1,0 +1,100 @@
+﻿
+@model UserProfileViewModel;
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<nav class="cn">
+    <a asp-action="Index" asp-controller="Home"><img src="~/images/logo.png" class="logo" /> </a>
+    <p class="title">@Model.DisplayName</p>
+    <a asp-action="Login" asp-controller="Account" class="btn">Logout</a>
+</nav>
+
+
+<form method="post" class="containerup">
+<div class="upleft">
+    <button id="editbtn" type="button" class="btn1" onclick="TriggerEdit()">Edit Profile</button>
+    <button Text="" class="btn1">Update Image</button>
+    <button Text="" class="btn1">Change Password</button>
+</div>
+
+    <div>
+        <h1 class="title">USER DATA</h1>
+
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" readonly="readonly" class="form-control text-center"/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" readonly="readonly" class="form-control text-center" />
+            </div>
+        
+
+            <div class="form-group">
+                <label asp-for="DisplayName"></label>
+                <input asp-for="DisplayName" readonly="readonly" class="form-control text-center" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Gender"></label>
+                <input asp-for="Gender" readonly="readonly" class="form-control text-center" />
+            </div>
+        
+        
+            <div class="form-group">
+                <label asp-for="DateOfBirth"></label>
+                <input asp-for="DateOfBirth" readonly="readonly" class="form-control text-center" />
+            </div>
+      
+            <div class="form-group">
+                <label asp-for="Age"></label>
+                <input asp-for="Age" readonly="readonly" class="form-control text-center" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" readonly="readonly" class="form-control text-center" />
+            </div>
+        
+            <div class="form-group">
+                <label asp-for="State"></label>
+                <input asp-for="State" readonly="readonly" class="form-control text-center" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" readonly="readonly" class="form-control text-center" />
+            </div>
+     
+            <div class="form-group">
+                <label asp-for="ZipCode"></label>
+                <input asp-for="ZipCode" readonly="readonly" class="form-control text-center" />
+            </div>
+       
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input asp-for="Phone" readonly="readonly" class="form-control text-center" />
+            </div>
+        
+            <div class="form-group">
+                <label asp-for="Mobile"></label>
+                <input asp-for="Mobile" readonly="readonly" class="form-control text-center" />
+            </div>
+
+            <div class="line">
+                <button id="cancelbtn" type="reset" class="btn1" style="visibility:hidden" onclick="CancelEdit()">Cancel</button>
+
+                <button id="savebtn" type="submit" class="btn1"
+                    asp-action="UpdateProfile" asp-controller="User" formmethod="post" style="visibility:hidden">Save Changes</button>
+            </div>
+
+    </div>
+
+</form>
+
+
+@section Scripts {
+    <script src="~/js/profile.js"></script>
+}

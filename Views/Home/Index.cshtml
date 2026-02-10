@@ -1,4 +1,10 @@
-﻿<nav class="cn">
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+
+
+<nav class="cn">
     <a asp-controller="Home" asp-action="Index">  <img src="images/logo.png" class="logo" /> </a>
     <a asp-controller="Account" asp-action="Login" class="btn">Login</a>
     <a asp-controller="Account" asp-action="Register" class="btn">Register</a>

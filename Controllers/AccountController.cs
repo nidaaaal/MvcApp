@@ -66,9 +66,9 @@ namespace MvcApp.Controllers
 
             TempData["SuccessMessage"] ="Login Sucessfull";
 
+            HttpContext.Session.SetInt32("userId", result.UserId??0);
 
-
-            return View();
+            return RedirectToAction("Profile", "User");
 
         }
 

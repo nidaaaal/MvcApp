@@ -9,7 +9,7 @@ namespace MvcApp.Services.Interfaces
         Task<AccountResult> RegisterUser(RegisterViewModel userRegisterDto);
         Task<AccountResult> LoginUser(string username, string password);
 
-        Task<Users?> GetUserProfile(int id);
+        Task<UserProfileViewModel?> GetUserProfile(int id);
 
         Task<AccountResult> UpdateUserProfile(int id,UpdateViewModel updateProfileDto);
     }
