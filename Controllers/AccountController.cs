@@ -72,5 +72,43 @@ namespace MvcApp.Controllers
 
         }
 
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            };
+
+            int userId = HttpContext.Session.GetInt32("userId") ?? 0;
+
+            var result = await _userService.ChangePassword(userId, model.OldPassword, model.NewPassword);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError("", result.ErrorMessage);
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Password Changed Successfully";
+
+            return RedirectToAction("Login");
+        }
+
     }
 }

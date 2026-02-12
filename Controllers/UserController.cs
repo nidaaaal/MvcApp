@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MvcApp.Models.ViewModels;
 using MvcApp.Services.Interfaces;
+using System.Diagnostics.Eventing.Reader;
 
 namespace MvcApp.Controllers
 {
@@ -33,5 +35,30 @@ namespace MvcApp.Controllers
             return View(result);
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Profile(UserProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            int userId = HttpContext.Session.GetInt32("userId") ?? 0;
+
+            var result = await _userService.UpdateUserProfile(userId,model);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError("",result.ErrorMessage);
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Profile Updated successfully.";
+
+            return View(model);
+            
+        }
+
     }
 }

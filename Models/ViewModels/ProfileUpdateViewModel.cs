@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MvcApp.Models.ViewModels
 {
-    public class UpdateViewModel
+    public class ProfileUpdateViewModel
     {
         [Required]
         [MinLength(3), MaxLength(50)]
@@ -24,7 +24,7 @@ namespace MvcApp.Models.ViewModels
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        public bool Gender { get; set; }
+        public int Gender { get; set; }
 
         [Required]
         [MaxLength(500)]

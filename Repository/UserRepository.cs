@@ -130,7 +130,7 @@ namespace MvcApp.Repository
             }
 
         }
-        public async Task<DbResponse> UpdateUserProfile(int id,UpdateViewModel updateProfile,int age)
+        public async Task<DbResponse> UpdateUserProfile(int id,ProfileUpdateViewModel updateProfile,int age)
         {
             var paramiters = new SqlParameter[]
             {
@@ -162,5 +162,50 @@ namespace MvcApp.Repository
 
 
         }
+
+        public async Task<string?> GetPasswordById(int id)
+        {
+            string sql = "SELECT hashed_password FROM auth.credentials WHERE id = @id;";
+            await using var conn = GetConnection();
+
+            await using SqlCommand cmd = new SqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await conn.OpenAsync();
+
+
+            await using var read = await cmd.ExecuteReaderAsync();
+
+            if (!await read.ReadAsync()) return null;
+
+            return Convert.ToString(read["hashed_password"]);
+
+        }
+
+        public async Task<bool> SavePassword(int id,string password)
+        {
+
+            string sql =
+                "Update auth.credentials  SET hashed_password = @password , password_changed_at = @now WHERE id = @id";
+            await using var conn = GetConnection();
+
+            await using SqlCommand cmd = new SqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@password", password);
+            cmd.Parameters.AddWithValue("@now",DateTime.Now);
+
+            await conn.OpenAsync();
+
+
+            var result = await cmd.ExecuteNonQueryAsync();
+
+            Debug.WriteLine($"dbresult : {result}");
+
+            return result > 0;
+
+        }
+
     }
 }

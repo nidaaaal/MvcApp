@@ -6,6 +6,7 @@ using MvcApp.Services.Interfaces;
 using MvcApp.Models.Common;
 using MvcApp.Models.Entities;
 using MvcApp.Models.ViewModels;
+using System.Diagnostics;
 
 namespace MvcApp.Services
 {
@@ -112,6 +113,9 @@ namespace MvcApp.Services
                 LastName = result.LastName,
                 DisplayName = result.DisplayName ?? "",
                 DateOfBirth = result.DateOfBirth.ToString("dd/MM/yyyy"),
+                Day =    result.DateOfBirth.Day,
+                Month = result.DateOfBirth.Month,
+                Year = result.DateOfBirth.Year,
                 Age = result.Age,
                 Gender = result.Gender ? "Male" : "Female",
                 Address = result.Address ?? "",
@@ -119,30 +123,50 @@ namespace MvcApp.Services
                 State = result.State ?? "",
                 ZipCode = result.ZipCode,
                 Phone = result.Phone,
-                Mobile = result.Mobile ?? "",
-                IsEditing = false
-                
+                Mobile = result.Mobile ?? "",                
             };
             
         }
 
-        public async Task<AccountResult> UpdateUserProfile(int id, UpdateViewModel updateProfileDto)
+        public async Task<AccountResult> UpdateUserProfile(int id, UserProfileViewModel model)
         {
             try
             {
+                var dob = new DateTime(model.Year,model.Month,model.Day);
                 var Today = DateTime.Today;
-                int age = Today.Year - updateProfileDto.DateOfBirth.Year;
+                int age = Today.Year - dob.Year;
 
-                if (updateProfileDto.DateOfBirth.Month > Today.Month || (updateProfileDto.DateOfBirth.Month == Today.Month && Today.Day < updateProfileDto.DateOfBirth.Day))
+                if (dob.Month > Today.Month || (dob.Month == Today.Month && Today.Day < dob.Day))
                 {
                     age--;
                 }
+                if (age < 13)
+                {
+                    return new AccountResult { IsSuccess = false, ErrorMessage = "Underage!" };
 
-                var result = await _userRepository.UpdateUserProfile(id, updateProfileDto, age);
+                }
+
+                var updatemodel = new ProfileUpdateViewModel
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DisplayName = model.DisplayName,
+                    DateOfBirth = dob,
+                    Gender = model.GenderCode,
+                    Address = model.Address,
+                    City = model.City,
+                    State= model.State,
+                    ZipCode= model.ZipCode,
+                    Phone= model.Phone,
+                    Mobile = model.Mobile
+                };
+
+
+                var result = await _userRepository.UpdateUserProfile(id, updatemodel, age);
 
                 if (result.ResultCode == 1)
                 {
-                    return new AccountResult { IsSuccess = false, ErrorMessage = "Profile Updated Sucessfully" };
+                    return new AccountResult { IsSuccess = true};
                 }
                 if (result.ResultCode == -1)
                 {
@@ -156,6 +180,28 @@ namespace MvcApp.Services
                 return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
 
             }
+
+        }
+
+        public async Task<AccountResult> ChangePassword(int id,string oldpassword,string password)
+        {
+           var hashedPassword = await _userRepository.GetPasswordById(id);
+
+            Debug.WriteLine(hashedPassword);
+
+            if (hashedPassword == null) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
+
+            if (!BCrypt.Net.BCrypt.Verify(oldpassword, hashedPassword)) return new AccountResult { IsSuccess = false , ErrorMessage ="You Entered ab wrong Password"};
+
+            string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+            var response  = await _userRepository.SavePassword(id, hashedNewPassword);
+
+            Debug.WriteLine($"service response {response}");
+
+            if (!response) return new AccountResult { IsSuccess = false, ErrorMessage = "password changing failed" };
+
+            return new AccountResult { IsSuccess = true };
 
         }
 

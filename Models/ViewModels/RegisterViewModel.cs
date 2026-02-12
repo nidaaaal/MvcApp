@@ -35,12 +35,15 @@ namespace MvcApp.Models.ViewModels
             public string? DisplayName { get; set; }
 
             [Required]
+            [Range(1,31)]
             public int Day { get; set; }
 
             [Required]
+            [Range(1,12)]
             public int Month { get; set; }
 
             [Required]
+            [Range(1900,2026)]
             public int Year { get; set; }
             
             public int Age { get; set; }

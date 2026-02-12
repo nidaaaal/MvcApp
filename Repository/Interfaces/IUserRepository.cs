@@ -10,7 +10,8 @@ namespace MvcApp.Repository.Interfaces
         Task<Credential?> GetUserByUsername(string username);
         Task SaveLogin(int id);
         Task<Users?> GetUserProfile(int id);
-        Task<DbResponse> UpdateUserProfile(int id,UpdateViewModel updateProfileDto,int age);
-
+        Task<DbResponse> UpdateUserProfile(int id,ProfileUpdateViewModel updateProfileDto,int age);
+        Task<string?> GetPasswordById(int id);
+        Task<bool> SavePassword(int id, string password);
     }
 }
