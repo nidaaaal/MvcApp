@@ -188,7 +188,9 @@ namespace MvcApp.Services
 
         public async Task<AccountResult> ChangePassword(int id,string oldpassword,string password)
         {
-           var currentPassword = await _userRepository.GetPasswordById(id);
+            if (oldpassword == password) return new AccountResult { IsSuccess = false, ErrorMessage = "New password cannot be the same as the old password." };
+
+            var currentPassword = await _userRepository.GetPasswordById(id);
 
 
             if (currentPassword == null) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
@@ -220,7 +222,14 @@ namespace MvcApp.Services
 
             string folder = Path.Combine(_env.WebRootPath, "uploads","users",id.ToString());
 
-            if(!Directory.Exists(folder))Directory.CreateDirectory(folder);
+            Directory.CreateDirectory(folder);
+
+            var existingFiles = Directory.GetFiles(folder);
+
+            foreach (var files in existingFiles)
+            {
+                File.Delete(files);
+            }
 
             string ext = Path.GetExtension(file.FileName).ToLower();
             string fileName = "profile" + ext;
