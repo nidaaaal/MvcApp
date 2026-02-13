@@ -13,5 +13,6 @@ namespace MvcApp.Repository.Interfaces
         Task<DbResponse> UpdateUserProfile(int id,ProfileUpdateViewModel updateProfileDto,int age);
         Task<string?> GetPasswordById(int id);
         Task<bool> SavePassword(int id, string password);
+        Task<bool> UploadImage(int id,byte[] imageBytes,string imagePath);
     }
 }

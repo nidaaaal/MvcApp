@@ -67,8 +67,8 @@ body {
 
 .cn {
     display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: baseline;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     gap: 10px;
     padding: 10px 20px;
     border-bottom: 2px solid black;
@@ -138,3 +138,12 @@ select {
     text-align: center;
     color: #CFBA34;
 }
+
+.nav-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+

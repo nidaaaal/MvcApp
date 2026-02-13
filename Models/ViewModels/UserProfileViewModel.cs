@@ -58,6 +58,8 @@ namespace MvcApp.Models.ViewModels
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Enter a valid 10-digit phone number")]
         public string? Mobile { get; set; } = null;
 
+        public string? ProfilePath { get; set; }    
+
     }
 
 }

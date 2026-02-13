@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MvcApp.Helper.AttributeValidation;
 using System.ComponentModel.DataAnnotations;
 
 namespace MvcApp.Models.ViewModels
@@ -6,17 +7,10 @@ namespace MvcApp.Models.ViewModels
 
     public class ProfileImageViewModel
     {
-        [Required]
-
-        public IFormFile file { get; set; } = null!;
-
-        [Required]
-
-        public string ExstingUrl { get; set; } = string.Empty;
-
-        [Required]
-
-        public bool Preview { get; set; }
+        [Required(ErrorMessage ="Please upload an image")]
+        [AllowExtensions(new[] {".jpg",".jpeg",".png"} )]
+        [FileSize(2*1024*1024)]
+        public IFormFile File { get; set; } = null!;
 
     }
 }

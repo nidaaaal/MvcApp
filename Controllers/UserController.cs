@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MvcApp.Models.ViewModels;
 using MvcApp.Services.Interfaces;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MvcApp.Controllers
 {
@@ -32,6 +34,8 @@ namespace MvcApp.Controllers
 
             HttpContext.Session.SetString("name", result.DisplayName ?? result.FirstName);
 
+            HttpContext.Session.SetString("profileImage",string.IsNullOrEmpty(result.ProfilePath)? "/images/profile.jpg" : result.ProfilePath);
+
             return View(result);
 
         }
@@ -59,6 +63,34 @@ namespace MvcApp.Controllers
             return View(model);
             
         }
+
+        [HttpGet]
+        public IActionResult ProfileImage()
+        {
+            return View(new ProfileImageViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProfileImage(ProfileImageViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var userId = HttpContext.Session.GetInt32("userId") ?? 0;
+            var result = await _userService.UpdateImage(userId,model.File);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError("", result.ErrorMessage);
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Image updated successfully";
+
+            return RedirectToAction("Profile");
+        }
+
 
     }
 }

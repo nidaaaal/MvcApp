@@ -13,10 +13,12 @@ namespace MvcApp.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IWebHostEnvironment _env;
 
-        public UserService(IUserRepository userRepository) 
+        public UserService(IUserRepository userRepository,IWebHostEnvironment webHostEnvironment) 
         { 
             _userRepository = userRepository;
+            _env = webHostEnvironment;
         }
 
         public async Task<AccountResult> RegisterUser(RegisterViewModel dto)
@@ -123,7 +125,8 @@ namespace MvcApp.Services
                 State = result.State ?? "",
                 ZipCode = result.ZipCode,
                 Phone = result.Phone,
-                Mobile = result.Mobile ?? "",                
+                Mobile = result.Mobile ?? "",    
+                ProfilePath = result.ProfileImagePath ?? ""
             };
             
         }
@@ -185,25 +188,60 @@ namespace MvcApp.Services
 
         public async Task<AccountResult> ChangePassword(int id,string oldpassword,string password)
         {
-           var hashedPassword = await _userRepository.GetPasswordById(id);
+           var currentPassword = await _userRepository.GetPasswordById(id);
 
-            Debug.WriteLine(hashedPassword);
 
-            if (hashedPassword == null) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
+            if (currentPassword == null) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
 
-            if (!BCrypt.Net.BCrypt.Verify(oldpassword, hashedPassword)) return new AccountResult { IsSuccess = false , ErrorMessage ="You Entered ab wrong Password"};
+            if (!BCrypt.Net.BCrypt.Verify(oldpassword, currentPassword)) return new AccountResult { IsSuccess = false , ErrorMessage ="You Entered ab wrong Password"};
 
             string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
             var response  = await _userRepository.SavePassword(id, hashedNewPassword);
 
-            Debug.WriteLine($"service response {response}");
 
             if (!response) return new AccountResult { IsSuccess = false, ErrorMessage = "password changing failed" };
 
             return new AccountResult { IsSuccess = true };
 
         }
+
+        public async Task<AccountResult> UpdateImage(int id, IFormFile file)
+        {
+
+            byte[] bytes;
+
+            using(var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms);
+                bytes = ms.ToArray();
+
+            }
+
+            string folder = Path.Combine(_env.WebRootPath, "uploads","users",id.ToString());
+
+            if(!Directory.Exists(folder))Directory.CreateDirectory(folder);
+
+            string ext = Path.GetExtension(file.FileName).ToLower();
+            string fileName = "profile" + ext;
+
+            string fullPath = Path.Combine(folder,fileName);
+
+            using var stram = new FileStream(fullPath,FileMode.Create);
+            await file.CopyToAsync(stram);
+
+            string relativePath =$"/uploads/users/{id}/{fileName}";
+
+
+            var response = await _userRepository.UploadImage(id, bytes, relativePath);
+
+            if (!response) return new AccountResult { IsSuccess = false,ErrorMessage = "Image Uploading Failed" };
+
+            return new AccountResult { IsSuccess = true };
+
+
+        }
+
 
     }
 }

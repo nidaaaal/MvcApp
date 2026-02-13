@@ -16,5 +16,6 @@ namespace MvcApp.Services.Interfaces
 
         Task<AccountResult> ChangePassword(int id, string oldpassword, string password);
 
+        Task<AccountResult> UpdateImage(int id, IFormFile file);
     }
 }

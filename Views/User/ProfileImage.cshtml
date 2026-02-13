@@ -1,0 +1,45 @@
+﻿@model ProfileImageViewModel
+
+@{
+    ViewData["Title"] = "Image Upload";
+}
+
+<nav class="cn">
+    <div>
+    <a asp-action="Index" asp-controller="Home"><img src="~/images/logo.png" class="logo" /> </a>
+    </div>
+    <div></div>
+    <div class="d-flex gap-2">
+    <img src="@(Context.Session.GetString("profileImage"))" class="nav-icon" />
+    <p class="title">@Context.Session.GetString("name")</p>
+    <form method="post">
+        <button type="submit" asp-action="Logout" asp-controller="Account" class="btn">Logout</button>
+    </form>
+    </div>
+</nav>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="containerform">
+        <h1 class="title">Update Profile Image</h1>
+        <div class="form-group">
+         <input type="file" asp-for="File" class="form-control" id="imageInput" accept="image/*"/>
+    </div>
+
+    <div class="line">
+        <a asp-action="Profile" asp-controller="User" class="btn">Back</a>
+        <button type="submit" class="btn">Update</button>
+    </div>
+    </div>
+
+        <hr />
+        <h3 class="title">Preview</h3>
+        <div class="d-flex justify-content-center mb-3">
+            <img src="~/images/preview.jpg" alt="previwImage" id="previewImage" class="bgimg" />
+        </div>
+</form>
+
+    @section Scripts
+    {
+        <partial name="_ValidationScriptsPartial" />
+        <script src="~/js/UploadImage.js"></script>
+    }

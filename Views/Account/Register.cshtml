@@ -5,9 +5,14 @@
 }
 
 <nav class="cn">
-    <a asp-controller="Home" asp-action="Index"><img src="~/images/logo.png" class="logo" /> </a>
-    <a asp-controller="Account" asp-action="Login" class="btn">Login</a>
-    <a asp-controller="Account" asp-action="Register" class="btn">Register</a>
+    <div>
+        <a asp-controller="Home" asp-action="Index"><img src="~/images/logo.png" class="logo" /> </a>
+    </div>
+    <div></div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Account" asp-action="Login" class="btn">Login</a>
+        <a asp-controller="Account" asp-action="Register" class="btn">Register</a>
+    </div>
 </nav>
 
 <div class="containerform">
@@ -23,7 +28,7 @@
 
     <div class="form-group">
         <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
+        <input asp-for="Password" type="password" class="form-control" />
         <span asp-validation-for="Password" class="error small"></span>
     </div>
 

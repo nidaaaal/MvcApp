@@ -5,6 +5,7 @@ using System.Net;
 using MvcApp.Models.Entities;
 using MvcApp.Models.ViewModels;
 using MvcApp.Models.Common;
+using System.Data;
 
 namespace MvcApp.Repository
 {
@@ -123,7 +124,8 @@ namespace MvcApp.Repository
                     State = read["state"] == DBNull.Value ? null : Convert.ToString(read["state"]),
                     ZipCode = Convert.ToInt32(read["zipcode"]),
                     Phone = Convert.ToString(read["phone"]),
-                    Mobile = read["mobile"] == DBNull.Value ? null : Convert.ToString(read["mobile"])
+                    Mobile = read["mobile"] == DBNull.Value ? null : Convert.ToString(read["mobile"]),
+                    ProfileImagePath = read["profile_image_path"] == DBNull.Value ? null : Convert.ToString(read["profile_image_path"])
 
                 };
 
@@ -201,11 +203,36 @@ namespace MvcApp.Repository
 
             var result = await cmd.ExecuteNonQueryAsync();
 
-            Debug.WriteLine($"dbresult : {result}");
 
             return result > 0;
 
         }
+
+        public async Task<bool> UploadImage(int id, byte[] imageBytes, string imagePath)
+        {
+            try
+            {
+                string sql = "UPDATE app.users SET profile_image = @img, profile_image_path = @path, profile_image_updated_at = GETDATE() WHERE user_id = @id;";
+                await using var conn = GetConnection();
+                await using SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add("@img", SqlDbType.VarBinary).Value = imageBytes;
+                cmd.Parameters.AddWithValue("@path", imagePath);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                await conn.OpenAsync();
+                var result = await cmd.ExecuteNonQueryAsync();
+                Debug.WriteLine($"dbresult : {result}");
+                return result > 0;
+            }
+            catch(Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+
+
+
+        }
+
 
     }
 }
