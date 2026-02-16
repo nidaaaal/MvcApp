@@ -62,7 +62,8 @@ body {
 }
 
 .bgimg {
-    height: 300px;
+    height: 100%;
+    width:100%;
 }
 
 .cn {
