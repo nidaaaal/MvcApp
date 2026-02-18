@@ -14,100 +14,31 @@ namespace MvcApp.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepository userRepository,IWebHostEnvironment webHostEnvironment) 
+        public UserService(IUserRepository userRepository,IWebHostEnvironment webHostEnvironment,
+            ILogger<UserService> logger) 
         { 
             _userRepository = userRepository;
             _env = webHostEnvironment;
+            _logger = logger;
         }
 
-        public async Task<AccountResult> RegisterUser(RegisterViewModel dto)
-        {
-            var validateUsername = InputIdentifier.Identify(dto.UserName);
-
-            if (validateUsername == InputIdentifier.InputType.Invalid)
-                return new AccountResult { IsSuccess = false,  ErrorMessage = "Invalid Email or Phone Number format" };
-
-            var passwordCheck = PasswordValidator.Validate(dto.Password);
-
-            if (!passwordCheck.IsValid)
-                return new AccountResult { IsSuccess = false,  ErrorMessage = passwordCheck.ErrorMessage };
-
-
-
-            string hashedPass =  BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-            var dob = new DateTime(dto.Year, dto.Month, dto.Day);
-
-            var Today = DateTime.Today;
-
-
-            int age = Today.Year - dto.Year;
-
-            if(dto.Month > Today.Month || (dto.Month == Today.Month && Today.Day < dto.Day))
-            {
-                age--;
-            }
-
-            if(age <13)
-            {
-                return new AccountResult { IsSuccess = false, ErrorMessage = "Underage!" };
-
-            }
-
-            try
-            {
-                int result = await _userRepository.RegisterUser(dto, hashedPass, age,dob);
-
-                if (result == -1)
-                {
-                    return new AccountResult { IsSuccess = false, ErrorMessage = "Username already exists with the username" };
-
-                }
-                if (result == 1)
-                {
-                    return new AccountResult { IsSuccess = true };
-                }
-                else
-                {
-                    return new AccountResult { IsSuccess = false, ErrorMessage = "Registered Failed" };
-
-                }
-            }
-            catch (Exception ex)
-            {
-                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
-
-            }
-        }
-
-        public async Task<AccountResult> LoginUser(string username, string password)
-        {
-            try
-            {
-                var result = await _userRepository.GetUserByUsername(username);
-
-                if (result == null) return new AccountResult { IsSuccess = false, ErrorMessage = "No User Found on the corresponding username" };
-
-                if (!BCrypt.Net.BCrypt.Verify(password, result.HashedPassword)) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Credentials!" };
-
-
-                await _userRepository.SaveLogin(result.Id);
-
-                return new AccountResult { IsSuccess = true ,UserId = result.Id };
-            }
-            catch(Exception ex)
-            {
-                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
-
-            }
-        }
         public async Task<UserProfileViewModel?> GetUserProfile(int id)
         {
+            _logger.LogInformation("Fetching profile for User {UserId}", id);
 
-                var result = await _userRepository.GetUserProfile(id);
+            var result = await _userRepository.GetUserProfile(id);
 
-                if( result == null) return  null ;
+            if (result == null)
+            {
+                _logger.LogWarning("UserProfile retrieval failed: User {UserId} not found.", id);
+
+                return null;
+            }
+
+            _logger.LogWarning("UserProfile retrieval success for User {UserId}.", id);
+
 
             return new UserProfileViewModel
             {
@@ -133,76 +64,97 @@ namespace MvcApp.Services
 
         public async Task<AccountResult> UpdateUserProfile(int id, UserProfileViewModel model)
         {
-            try
+            _logger.LogInformation("Updating profile for User {UserId}", id);
+
+            var dob = new DateTime(model.Year,model.Month,model.Day);
+            var Today = DateTime.Today;
+            int age = Today.Year - dob.Year;
+
+            if (dob.Month > Today.Month || (dob.Month == Today.Month && Today.Day < dob.Day))
             {
-                var dob = new DateTime(model.Year,model.Month,model.Day);
-                var Today = DateTime.Today;
-                int age = Today.Year - dob.Year;
-
-                if (dob.Month > Today.Month || (dob.Month == Today.Month && Today.Day < dob.Day))
-                {
-                    age--;
-                }
-                if (age < 13)
-                {
-                    return new AccountResult { IsSuccess = false, ErrorMessage = "Underage!" };
-
-                }
-
-                var updatemodel = new ProfileUpdateViewModel
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    DisplayName = model.DisplayName,
-                    DateOfBirth = dob,
-                    Gender = model.GenderCode,
-                    Address = model.Address,
-                    City = model.City,
-                    State= model.State,
-                    ZipCode= model.ZipCode,
-                    Phone= model.Phone,
-                    Mobile = model.Mobile
-                };
-
-
-                var result = await _userRepository.UpdateUserProfile(id, updatemodel, age);
-
-                if (result.ResultCode == 1)
-                {
-                    return new AccountResult { IsSuccess = true};
-                }
-                if (result.ResultCode == -1)
-                {
-                    return new AccountResult { IsSuccess = false, ErrorMessage = "User Not Found" };
-                }
-                return new AccountResult { IsSuccess = false, ErrorMessage = "unhandled exception" };
+                age--;
+            }
+            if (age < 13)
+            {
+                _logger.LogWarning("Registration rejected: Underage user {id}", id);
+                return new AccountResult { IsSuccess = false, ErrorMessage = "Underage!" };
 
             }
-            catch (Exception ex)
-            {
-                return new AccountResult { IsSuccess = false, ErrorMessage = ex.Message };
 
+
+            var updatemodel = new ProfileUpdateViewModel
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                DisplayName = model.DisplayName,
+                DateOfBirth = dob,
+                Gender = model.GenderCode,
+                Address = model.Address,
+                City = model.City,
+                State= model.State,
+                ZipCode= model.ZipCode,
+                Phone= model.Phone,
+                Mobile = model.Mobile
+            };
+
+            var result = await _userRepository.UpdateUserProfile(id, updatemodel, age);
+
+
+            if (result.ResultCode == 1)
+            {
+                _logger.LogInformation("Profile updated successfully for User {UserId}.", id);
+
+                return new AccountResult { IsSuccess = true};
             }
+            if (result.ResultCode == -1)
+            {
+                _logger.LogWarning("Update failed: User {UserId} not found.", id);
+
+                return new AccountResult { IsSuccess = false, ErrorMessage = "User Not Found" };
+            }
+            _logger.LogError("Update failed for User {UserId}. Server Code: {ResultCode}", id, result.ResultCode);
+
+            return new AccountResult { IsSuccess = false, ErrorMessage = "unhandled exception" };
+
+        
 
         }
 
         public async Task<AccountResult> ChangePassword(int id,string oldpassword,string password)
         {
-            if (oldpassword == password) return new AccountResult { IsSuccess = false, ErrorMessage = "New password cannot be the same as the old password." };
+            if (oldpassword == password)
+            {
+                _logger.LogWarning("Password change failed: New password is same as old for User {UserId}", id);
 
+                return new AccountResult { IsSuccess = false, ErrorMessage = "New password cannot be the same as the old password." };
+            }
             var currentPassword = await _userRepository.GetPasswordById(id);
 
 
-            if (currentPassword == null) return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
+            if (currentPassword == null)
+            {
+                _logger.LogWarning("Password change failed: User {UserId} not found.", id);
 
-            if (!BCrypt.Net.BCrypt.Verify(oldpassword, currentPassword)) return new AccountResult { IsSuccess = false , ErrorMessage ="You Entered ab wrong Password"};
+                return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid Id" };
+            }
+            if (!BCrypt.Net.BCrypt.Verify(oldpassword, currentPassword))
+            {
+                _logger.LogWarning("Password change failed: Invalid current password for User {UserId}", id);
 
+                return new AccountResult { IsSuccess = false, ErrorMessage = "You Entered ab wrong Password" };
+            }
             string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
             var response  = await _userRepository.SavePassword(id, hashedNewPassword);
 
 
-            if (!response) return new AccountResult { IsSuccess = false, ErrorMessage = "password changing failed" };
+            if (!response)
+            {
+                _logger.LogError("Password change failed for User {UserId}: Database save error.", id);
+
+                return new AccountResult { IsSuccess = false, ErrorMessage = "password changing failed" };
+            }
+            _logger.LogError("Password changed successfully for User {UserId}", id);
 
             return new AccountResult { IsSuccess = true };
 
@@ -244,7 +196,14 @@ namespace MvcApp.Services
 
             var response = await _userRepository.UploadImage(id, bytes, relativePath);
 
-            if (!response) return new AccountResult { IsSuccess = false,ErrorMessage = "Image Uploading Failed" };
+            if (!response)
+            {
+                _logger.LogError("Database update failed for image upload. User: {UserId}", id);
+
+                return new AccountResult { IsSuccess = false, ErrorMessage = "Image Uploading Failed" };
+            }
+
+            _logger.LogInformation("Profile image updated successfully for User {UserId}", id);
 
             return new AccountResult { IsSuccess = true };
 

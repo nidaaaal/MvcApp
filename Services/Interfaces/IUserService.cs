@@ -6,9 +6,6 @@ namespace MvcApp.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<AccountResult> RegisterUser(RegisterViewModel userRegisterDto);
-
-        Task<AccountResult> LoginUser(string username, string password);
 
         Task<UserProfileViewModel?> GetUserProfile(int id);
 

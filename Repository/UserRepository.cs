@@ -49,7 +49,7 @@ namespace MvcApp.Repository
 
         public async Task<Credential?> GetUserByUsername(string username)
         {
-            string sql = "SELECT id,username,hashed_password FROM auth.credentials WHERE username = @username;";
+            string sql = "SELECT id,username,hashed_password,role FROM auth.credentials WHERE username = @username;";
             await using var conn = GetConnection();
 
             await using SqlCommand cmd = new SqlCommand(sql, conn);
@@ -69,6 +69,8 @@ namespace MvcApp.Repository
                 credential.Id = Convert.ToInt32(read["id"]);
                 credential.UserName = Convert.ToString(read["username"]) ?? "";
                 credential.HashedPassword = Convert.ToString(read["hashed_password"]) ?? "";
+                credential.Role = Convert.ToString(read["role"]);
+                
 
 
             return credential;
@@ -210,8 +212,6 @@ namespace MvcApp.Repository
 
         public async Task<bool> UploadImage(int id, byte[] imageBytes, string imagePath)
         {
-            try
-            {
                 string sql = "UPDATE app.users SET profile_image = @img, profile_image_path = @path, profile_image_updated_at = GETDATE() WHERE user_id = @id;";
                 await using var conn = GetConnection();
                 await using SqlCommand cmd = new SqlCommand(sql, conn);
@@ -223,16 +223,38 @@ namespace MvcApp.Repository
                 var result = await cmd.ExecuteNonQueryAsync();
                 Debug.WriteLine($"dbresult : {result}");
                 return result > 0;
-            }
-            catch(Exception ex) 
-            {
-                throw new Exception(ex.Message);
-            }
-
-
 
         }
 
+        public async Task<IEnumerable<UsersViewModel>> GetAllUsers()
+        {
+            string sql =
+                "SELECT c.id,u.first_name,u.last_name,u.phone,c.role FROM app.users as u JOIN auth.credentials as c on u.user_id = c.id WHERE c.role != 'Admin'";
+            
+            await using var conn = GetConnection();
 
+            await using SqlCommand cmd = new SqlCommand(sql, conn);
+
+            await conn.OpenAsync();
+
+
+            await using var read = await cmd.ExecuteReaderAsync();
+
+            List<UsersViewModel> users = new List<UsersViewModel>();
+
+            while (await read.ReadAsync())
+            {
+                    users.Add(new UsersViewModel
+                    {
+                        Id = Convert.ToInt32(read["id"]),
+                        FirstName = Convert.ToString(read["first_name"]),
+                        LastName = Convert.ToString(read["last_name"]),
+                        Phone = Convert.ToString(read["phone"]),
+                        Role = Convert.ToString(read["role"])
+                    });
+            }
+
+            return users;
+        }
     }
 }

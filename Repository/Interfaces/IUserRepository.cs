@@ -14,5 +14,6 @@ namespace MvcApp.Repository.Interfaces
         Task<string?> GetPasswordById(int id);
         Task<bool> SavePassword(int id, string password);
         Task<bool> UploadImage(int id,byte[] imageBytes,string imagePath);
+        Task<IEnumerable<UsersViewModel>> GetAllUsers();
     }
 }

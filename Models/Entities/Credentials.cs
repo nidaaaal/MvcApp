@@ -21,6 +21,9 @@ namespace MvcApp.Models.Entities
         [MaxLength(225)]
         public string HashedPassword { get; set; } = string.Empty;
 
+        [Column("role")]
+        public string? Role { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

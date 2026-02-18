@@ -1,0 +1,46 @@
+﻿ @model IEnumerable<UsersViewModel>
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<nav class="cn">
+    <div>
+        <a asp-action="Users" asp-controller="Admin"><img src="~/images/logo.png" class="logo" /></a>
+    </div>
+    <div></div>
+    <div class="d-flex gap-2">
+        <img src="~/images/profile.jpg" class="nav-icon" />
+        <p class="title">Admin</p>
+        <form method="post">
+            <button type="submit" asp-action="Logout" asp-controller="Account" class="btn">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="containerform">
+    <table class="table">
+        <thead>
+            <tr>Id</tr>
+            <tr>First Name</tr>
+            <tr>Last Name</tr>
+            <tr>Phone</tr>
+            <tr>Role</tr>
+        </thead>
+
+        <tbody>
+            @foreach(var users in Model)
+            {
+                <tr>
+                    <td>@users.Id</td>
+                    <td>@users.FirstName</td>
+                    <td>@users.LastName</td>
+                    <td>@users.Phone</td>
+                    <td>@users.Role</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>

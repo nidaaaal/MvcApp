@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MvcApp.Helper;
 using MvcApp.Models.ViewModels;
 using MvcApp.Services.Interfaces;
 using System.Diagnostics;
@@ -7,20 +9,23 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace MvcApp.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IUserFinder _userFinder;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService,IUserFinder userFinder)
         {
             _userService = userService;
+            _userFinder = userFinder;
         }
 
 
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            var userId = Convert.ToInt32(HttpContext.Session.GetInt32("userId"));
+            var userId = _userFinder.GetId();
 
             var result = await _userService.GetUserProfile(userId);
 
@@ -48,7 +53,7 @@ namespace MvcApp.Controllers
                 return View(model);
             }
 
-            int userId = HttpContext.Session.GetInt32("userId") ?? 0;
+            var userId = _userFinder.GetId();
 
             var result = await _userService.UpdateUserProfile(userId,model);
 
@@ -77,7 +82,7 @@ namespace MvcApp.Controllers
             {
                 return View(model);
             }
-            var userId = HttpContext.Session.GetInt32("userId") ?? 0;
+            var userId = _userFinder.GetId();
             var result = await _userService.UpdateImage(userId,model.File);
 
             if (!result.IsSuccess)
