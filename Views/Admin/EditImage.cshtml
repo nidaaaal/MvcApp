@@ -1,0 +1,44 @@
+﻿@model ProfileImageViewModel
+
+@{
+    ViewData["Title"] = "Edit Image";
+}
+
+<nav class="cn">
+    <div>
+        <a asp-action="Users" asp-controller="Admin"><img src="~/images/logo.png" class="logo" /></a>
+    </div>
+    <div></div>
+    <div class="d-flex gap-2">
+        <img src="~/images/profile.jpg" class="nav-icon" />
+        <p class="title">Admin</p>
+        <form method="post">
+            <button type="submit" asp-action="Logout" asp-controller="Account" class="btn">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="containerform">
+        <h1 class="title">Update Profile Image</h1>
+        <div class="form-group">
+         <input type="file" asp-for="File" class="form-control" id="imageInput" accept="image/*"/>
+    </div>
+
+    <div class="line">
+        <a asp-action="EditUser" asp-controller="Admin" asp-route-id="@Context.Session.GetInt32("userId")" class="btn">Back</a>
+        <button type="submit" asp-action="EditImage" asp-controller="Admin" asp-route-id="@Context.Session.GetInt32("userId")" class="btn">Update</button>
+    </div>
+    </div>
+
+        <hr />
+        <h3 class="title">Current Preview</h3>
+        <div class="d-flex justify-content-center mb-3">
+        <img src="@(string.IsNullOrEmpty(Model?.ExistingImagePath)? "/images/profile.jpg": Model.ExistingImagePath)" alt="previwImage" id="previewImage" style="max-width:200px;border-radius:10px;" />
+        </div>
+</form>
+    @section Scripts
+    {
+        <partial name="_ValidationScriptsPartial" />
+        <script src="~/js/UploadImage.js"></script>
+    }

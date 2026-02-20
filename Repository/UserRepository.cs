@@ -134,7 +134,7 @@ namespace MvcApp.Repository
             }
 
         }
-        public async Task<DbResponse> UpdateUserProfile(int id,ProfileUpdateViewModel updateProfile,int age)
+        public async Task<DbResponse> UpdateUserProfile(int id,ProfileUpdateViewModel updateProfile,int age,string role)
         {
             var paramiters = new SqlParameter[]
             {
@@ -150,7 +150,8 @@ namespace MvcApp.Repository
                 new SqlParameter("@state",string.IsNullOrEmpty(updateProfile.State) ? (object)DBNull.Value : updateProfile.State),
                 new SqlParameter("@zipcode",updateProfile.ZipCode),
                 new SqlParameter("@phone",updateProfile.Phone),
-                new SqlParameter("@mobile",string.IsNullOrEmpty(updateProfile.Mobile) ? (object)DBNull.Value : updateProfile.Mobile)
+                new SqlParameter("@mobile",string.IsNullOrEmpty(updateProfile.Mobile) ? (object)DBNull.Value : updateProfile.Mobile),
+                new SqlParameter("@role",role)
             };
 
             var read = await ExecuteSp("app.profile_update",paramiters);
@@ -162,9 +163,6 @@ namespace MvcApp.Repository
                 ResultCode = Convert.ToInt32(read["ResultCode"]),
                 Message = Convert.ToString(read["Message"]) ?? ""
             };
-               
-
-
         }
 
         public async Task<string?> GetPasswordById(int id)
@@ -210,18 +208,19 @@ namespace MvcApp.Repository
 
         }
 
-        public async Task<bool> UploadImage(int id, byte[] imageBytes, string imagePath)
+        public async Task<bool> UploadImage(int id, byte[] imageBytes, string imagePath,string role)
         {
-                string sql = "UPDATE app.users SET profile_image = @img, profile_image_path = @path, profile_image_updated_at = GETDATE() WHERE user_id = @id;";
+                string sql = "UPDATE app.users SET profile_image = @img, profile_image_path = @path, profile_image_updated_at = GETDATE() ,profile_image_updated_by = @role WHERE user_id = @id;";
                 await using var conn = GetConnection();
                 await using SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.Add("@img", SqlDbType.VarBinary).Value = imageBytes;
                 cmd.Parameters.AddWithValue("@path", imagePath);
                 cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@role", role);
+
 
                 await conn.OpenAsync();
                 var result = await cmd.ExecuteNonQueryAsync();
-                Debug.WriteLine($"dbresult : {result}");
                 return result > 0;
 
         }
@@ -256,5 +255,54 @@ namespace MvcApp.Repository
 
             return users;
         }
+
+        public async Task<string?> GetImagePath(int id)
+        {
+            string sql = "SELECT profile_image_path FROM app.users WHERE user_id = @id;";
+
+            await using var conn = GetConnection();
+
+            await using SqlCommand cmd = new SqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await conn.OpenAsync();
+
+
+            await using var read = await cmd.ExecuteReaderAsync();
+
+            if (!await read.ReadAsync()) return null;
+
+            return read["profile_image_path"] == DBNull.Value ? null : Convert.ToString(read["profile_image_path"]);
+        }
+       
+        public async Task<DbResponse?> DeleteUser(int id)
+        {
+            string sql = "delete_user";
+
+            await using var conn = GetConnection();
+
+            await using SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await conn.OpenAsync();
+
+
+            await using var read = await cmd.ExecuteReaderAsync();
+
+            if (!await read.ReadAsync()) return null;
+
+            return new DbResponse
+            {
+                ResultCode = Convert.ToInt32(read["ResultCode"]),
+                Message = Convert.ToString(read["Message"])
+
+            };
+
+
+        }
+
     }
 }

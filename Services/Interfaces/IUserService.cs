@@ -9,10 +9,13 @@ namespace MvcApp.Services.Interfaces
 
         Task<UserProfileViewModel?> GetUserProfile(int id);
 
-        Task<AccountResult> UpdateUserProfile(int id,UserProfileViewModel profileViewModel);
+        Task<AccountResult> UpdateUserProfile(int id,UserProfileViewModel profileViewModel,string role);
 
         Task<AccountResult> ChangePassword(int id, string oldpassword, string password);
 
-        Task<AccountResult> UpdateImage(int id, IFormFile file);
+        Task<AccountResult> UpdateImage(int id, IFormFile file, string role);
+
+        Task<ProfileImageViewModel> GetProfileImage(int id);
+
     }
 }

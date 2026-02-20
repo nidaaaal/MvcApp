@@ -12,5 +12,6 @@ namespace MvcApp.Models.ViewModels
         [FileSize(2*1024*1024)]
         public IFormFile File { get; set; } = null!;
 
+        public string? ExistingImagePath { get; set; }
     }
 }

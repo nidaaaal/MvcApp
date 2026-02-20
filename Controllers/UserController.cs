@@ -55,7 +55,7 @@ namespace MvcApp.Controllers
 
             var userId = _userFinder.GetId();
 
-            var result = await _userService.UpdateUserProfile(userId,model);
+            var result = await _userService.UpdateUserProfile(userId,model,"User");
 
             if (!result.IsSuccess)
             {
@@ -83,7 +83,7 @@ namespace MvcApp.Controllers
                 return View(model);
             }
             var userId = _userFinder.GetId();
-            var result = await _userService.UpdateImage(userId,model.File);
+            var result = await _userService.UpdateImage(userId,model.File,"User");
 
             if (!result.IsSuccess)
             {

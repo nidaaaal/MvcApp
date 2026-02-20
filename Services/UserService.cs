@@ -1,11 +1,12 @@
 ﻿using BCrypt.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MvcApp.Helper;
-using MvcApp.Repository.Interfaces;
-using MvcApp.Services.Interfaces;
 using MvcApp.Models.Common;
 using MvcApp.Models.Entities;
 using MvcApp.Models.ViewModels;
+using MvcApp.Repository.Interfaces;
+using MvcApp.Services.Interfaces;
+using System.Data;
 using System.Diagnostics;
 
 namespace MvcApp.Services
@@ -15,19 +16,22 @@ namespace MvcApp.Services
         private readonly IUserRepository _userRepository;
         private readonly IWebHostEnvironment _env;
         private readonly ILogger<UserService> _logger;
+        private readonly IUserFinder _userFinder;
 
         public UserService(IUserRepository userRepository,IWebHostEnvironment webHostEnvironment,
-            ILogger<UserService> logger) 
+            ILogger<UserService> logger,IUserFinder userFinder) 
         { 
             _userRepository = userRepository;
             _env = webHostEnvironment;
             _logger = logger;
+            _userFinder = userFinder;
         }
 
         public async Task<UserProfileViewModel?> GetUserProfile(int id)
         {
-            _logger.LogInformation("Fetching profile for User {UserId}", id);
+            var role = _userFinder.GetRole();
 
+            _logger.LogInformation("Fetching profile for User {UserId} requested by {role}", id, role);
             var result = await _userRepository.GetUserProfile(id);
 
             if (result == null)
@@ -37,7 +41,7 @@ namespace MvcApp.Services
                 return null;
             }
 
-            _logger.LogWarning("UserProfile retrieval success for User {UserId}.", id);
+            _logger.LogWarning("UserProfile retrieval success for User {UserId} by {role}", id, role);
 
 
             return new UserProfileViewModel
@@ -62,9 +66,9 @@ namespace MvcApp.Services
             
         }
 
-        public async Task<AccountResult> UpdateUserProfile(int id, UserProfileViewModel model)
+        public async Task<AccountResult> UpdateUserProfile(int id, UserProfileViewModel model, string role)
         {
-            _logger.LogInformation("Updating profile for User {UserId}", id);
+            _logger.LogInformation("Updating profile for User {UserId} requested by {role}", id, role);
 
             var dob = new DateTime(model.Year,model.Month,model.Day);
             var Today = DateTime.Today;
@@ -97,12 +101,12 @@ namespace MvcApp.Services
                 Mobile = model.Mobile
             };
 
-            var result = await _userRepository.UpdateUserProfile(id, updatemodel, age);
+            var result = await _userRepository.UpdateUserProfile(id, updatemodel, age,role);
 
 
             if (result.ResultCode == 1)
             {
-                _logger.LogInformation("Profile updated successfully for User {UserId}.", id);
+                _logger.LogInformation("Profile updated successfully for User {UserId} by {role}", id, role);
 
                 return new AccountResult { IsSuccess = true};
             }
@@ -154,14 +158,15 @@ namespace MvcApp.Services
 
                 return new AccountResult { IsSuccess = false, ErrorMessage = "password changing failed" };
             }
-            _logger.LogError("Password changed successfully for User {UserId}", id);
+            _logger.LogInformation("Password changed successfully for User {UserId}", id);
 
             return new AccountResult { IsSuccess = true };
 
         }
 
-        public async Task<AccountResult> UpdateImage(int id, IFormFile file)
+        public async Task<AccountResult> UpdateImage(int id, IFormFile file, string role)
         {
+            _logger.LogInformation("Updating profile Image for User {UserId} requested by {role}", id, role);
 
             byte[] bytes;
 
@@ -194,7 +199,7 @@ namespace MvcApp.Services
             string relativePath =$"/uploads/users/{id}/{fileName}";
 
 
-            var response = await _userRepository.UploadImage(id, bytes, relativePath);
+            var response = await _userRepository.UploadImage(id, bytes, relativePath,role);
 
             if (!response)
             {
@@ -210,6 +215,21 @@ namespace MvcApp.Services
 
         }
 
+        public async Task<ProfileImageViewModel> GetProfileImage(int id)
+        {
+            var role = _userFinder.GetRole();
 
+            _logger.LogInformation("fetching profile Image for User {UserId} requested by {role}", id, role);
+
+            var imagePath = await _userRepository.GetImagePath(id);
+
+            _logger.LogInformation("User profile image retrived successfully");
+
+
+            return new ProfileImageViewModel
+            {
+                ExistingImagePath = imagePath
+            };
+        }
     }
 }
