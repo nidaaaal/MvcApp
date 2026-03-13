@@ -34,7 +34,7 @@
         <hr />
         <h3 class="title">Current Preview</h3>
         <div class="d-flex justify-content-center mb-3">
-        <img src="@(string.IsNullOrEmpty(Model?.ExistingImagePath)? "/images/profile.jpg": Model.ExistingImagePath)" alt="previwImage" id="previewImage" style="max-width:200px;border-radius:10px;" />
+        <img src="@(string.IsNullOrEmpty(Model?.ExistingImagePath) ? "/images/profile.jpg" : Model.ExistingImagePath)" alt="previwImage" id="previewImage" class="preview" />
         </div>
 </form>
     @section Scripts

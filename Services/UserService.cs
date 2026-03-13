@@ -145,7 +145,7 @@ namespace MvcApp.Services
             {
                 _logger.LogWarning("Password change failed: Invalid current password for User {UserId}", id);
 
-                return new AccountResult { IsSuccess = false, ErrorMessage = "You Entered ab wrong Password" };
+                return new AccountResult { IsSuccess = false, ErrorMessage = "Invalid oldpassword password" };
             }
             string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
@@ -223,7 +223,7 @@ namespace MvcApp.Services
 
             var imagePath = await _userRepository.GetImagePath(id);
 
-            _logger.LogInformation("User profile image retrived successfully");
+            _logger.LogInformation("User profile image retrived successfully path : {path}",imagePath);
 
 
             return new ProfileImageViewModel
